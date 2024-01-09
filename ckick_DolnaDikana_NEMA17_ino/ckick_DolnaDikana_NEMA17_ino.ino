@@ -593,20 +593,23 @@ int   Update()
       
       while(nStepCount)
       {
-        nStepCount = nStepCount - 1;
         Step_minute(nStepDirection);
+        nStepCount = nStepCount - 1;
       }
 
+      br = 0;
       while(nStepCount2)
       {
-        nStepCount2 = nStepCount2 - 1;
-        if(nStepCount2 % 12 == 0)
+        if (br == 0){
+          addHourSteps = (nStepCount2 + addHourSteps) % 12;
+          br = 1;
+        }
+        if((nStepCount2 + addHourSteps) % 12 == 0)
         {
           Step_hour(nStepDirectionHour);
         }
-        nStepCount = nStepCount - 1;
+        nStepCount2 = nStepCount2 - 1;
       }
-
     }
 
   }
