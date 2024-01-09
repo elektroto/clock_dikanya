@@ -622,6 +622,8 @@ int   Update()
   long              nStepDirectionHour = 0;
   long              nStepPosition = 1;
   long              nStepPositionN1 = 0;
+  int               br = 0;
+  int               addHourSteps = 0;
     
   // Calculate clockwise and counterclockwise time in minutes required to drive indicated time to actual time.
   
@@ -687,14 +689,20 @@ int   Update()
                            
       // Step the required steps.
 
+      br = 0;
       while(nStepCount)
       {
+        if (br == 0){
+          addHourSteps = (nStepCount + addHourSteps) % 12;
+          br = 1;
+        }
         Step_minute(nStepDirection);
-        nStepCount = nStepCount - 1;
-        if(nStepCount % 12 == 0)
+        
+        if((nStepCount + addHourSteps) % 12 == 0)
         {
           Step_hour(nStepDirectionHour);
         }
+        nStepCount = nStepCount - 1;
       }
 
     }
