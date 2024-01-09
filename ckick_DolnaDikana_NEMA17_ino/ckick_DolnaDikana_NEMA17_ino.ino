@@ -1,30 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                                          //
-//                                                   Clock                                                  //
-//                                                                                                          //
 //                                 Copyright (c) 2018 By Zumwalt Properties, LLC.                           //
 //                                                                                                          //
-//                                             All Rights Reserved.                                         //
-//                                                                                                          //
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Amazon:  https://www.amazon.com/gp/product/B077YGWRHK/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 // Includes.
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include                              <time.h>                              // for time
 #include                              <WiFi.h>                              // for wifi
 #include                              <WiFiUdp.h>                           // for udp
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 // Constants.
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 enum          NtpPacketMode           {REQUEST, SENT, RECEIVED};          // possible values for an NtpPacketMode variable.
 const int dirPin_minute = 2;
@@ -49,15 +31,11 @@ const int stepsPerRevolution = 12000;
 #endif
 #define       STEPS_PER_HOUR          12000                               // steps for one full revolution
 #define       SWITCH_PIN_minute       27                                  // 12:00 switch input-minute
-#define       SWITCH_PIN_hour         27                                  // 12:00 switch input-hour
-#define       TIME_ZONE               (+3)                                // offset from utc to your timezone
+#define       SWITCH_PIN_hour         26                                  // 12:00 switch input-hour
+#define       TIME_ZONE               (+2)                                // offset from utc to your timezone
 #define       UDP_PORT                4000                                // ntp time server udp port
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 // Global Variables.
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int             nDelay =                        5000;                     // main loop default delay
 NtpPacketMode   nNtpPacketMode =                REQUEST;                  // ntp packet request mode (see NtpPacketMode enum above)
@@ -74,11 +52,7 @@ long            nTimeInHoursIndicated =         0;                        // tim
 struct timeval  tvTimeValue;                                              // time value structure
 WiFiUDP         Udp;                                                      // udp structure
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 // Setup.
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setup() 
 {
@@ -482,82 +456,7 @@ void  Step(int nDirection)
   // Step this phase.
   
   switch(nPhase)
-  // {
-  //   case 0:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, HIGH);
-  //     digitalWrite(MOTOR_PHASE_C, LOW);
-  //     digitalWrite(MOTOR_PHASE_B, LOW);
-  //     digitalWrite(MOTOR_PHASE_A, LOW);
-  //   }
-  //   break;
-
-  //   case 1:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, HIGH);
-  //     digitalWrite(MOTOR_PHASE_C, HIGH);
-  //     digitalWrite(MOTOR_PHASE_B, LOW);
-  //     digitalWrite(MOTOR_PHASE_A, LOW);
-  //   }
-  //   break;
-
-  //   case 2:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, LOW);
-  //     digitalWrite(MOTOR_PHASE_C, HIGH);
-  //     digitalWrite(MOTOR_PHASE_B, LOW);
-  //     digitalWrite(MOTOR_PHASE_A, LOW);
-  //   }
-  //   break;
-
-  //   case 3:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, LOW);
-  //     digitalWrite(MOTOR_PHASE_C, HIGH);
-  //     digitalWrite(MOTOR_PHASE_B, HIGH);
-  //     digitalWrite(MOTOR_PHASE_A, LOW);
-  //   }
-  //   break;
-
-  //   case 4:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, LOW);
-  //     digitalWrite(MOTOR_PHASE_C, LOW);
-  //     digitalWrite(MOTOR_PHASE_B, HIGH);
-  //     digitalWrite(MOTOR_PHASE_A, LOW);
-  //   }
-  //   break;
-
-  //   case 5:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, LOW);
-  //     digitalWrite(MOTOR_PHASE_C, LOW);
-  //     digitalWrite(MOTOR_PHASE_B, HIGH);
-  //     digitalWrite(MOTOR_PHASE_A, HIGH);
-  //   }
-  //   break;
-
-  //   case 6:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, LOW);
-  //     digitalWrite(MOTOR_PHASE_C, LOW);
-  //     digitalWrite(MOTOR_PHASE_B, LOW);
-  //     digitalWrite(MOTOR_PHASE_A, HIGH);
-  //   }
-  //   break;
-
-  //   case 7:
-  //   {
-  //     digitalWrite(MOTOR_PHASE_D, HIGH);
-  //     digitalWrite(MOTOR_PHASE_C, LOW);
-  //     digitalWrite(MOTOR_PHASE_B, LOW);
-  //     digitalWrite(MOTOR_PHASE_A, HIGH);
-  //   }
-  //   break;
-  // }
-
-  // Hold this step for MILLISECONDS_STEP_HOLD milliseconds.
-   
+  
   delay(MILLISECONDS_STEP_HOLD);
   Step_minute(nDirection);
   delay(MILLISECONDS_STEP_HOLD);
@@ -575,9 +474,9 @@ void Step_minute(int nDirection)
     digitalWrite(dirPin_minute, HIGH);
    }
     digitalWrite(stepPin_minute, HIGH);
-    delayMicroseconds(1000);
+    delayMicroseconds(800);
     digitalWrite(stepPin_minute, LOW);
-    delayMicroseconds(1000);
+    delayMicroseconds(800);
   }
 }
 
@@ -593,9 +492,9 @@ void Step_hour(int nDirection)
     digitalWrite(dirPin_hour, HIGH);
    }
     digitalWrite(stepPin_hour, HIGH);
-    delayMicroseconds(1000);
+    delayMicroseconds(800);
     digitalWrite(stepPin_hour, LOW);
-    delayMicroseconds(1000);
+    delayMicroseconds(800);
   }
 }
 
@@ -617,6 +516,7 @@ int   Update()
   long              nClockwiseHours = 0;
   long              nCounterClockwiseHours = 0;
   long              nStepCount = 0;
+  long              nStepCount2 = 0;
   long              nStepCountHour = 0;
   long              nStepDirection = 0;
   long              nStepDirectionHour = 0;
@@ -649,15 +549,15 @@ int   Update()
       // Clockwise movement is shorter.
       
       nStepDirection = 1; 
-      nStepDirectionHour = -1;
+      nStepDirectionHour = 0;
       digitalWrite(dirPin_minute, LOW);
     }
     else
     {
       // Counterclockwise movement is shorter.
       
-      nStepDirection = -1;
-      nStepDirectionHour = 1;
+      nStepDirection = 1;
+      nStepDirectionHour = 0;
       digitalWrite(dirPin_minute, HIGH);
     }
 
@@ -689,16 +589,18 @@ int   Update()
                            
       // Step the required steps.
 
-      br = 0;
+      nStepCount2 = nStepCount;
+      
       while(nStepCount)
       {
-        if (br == 0){
-          addHourSteps = (nStepCount + addHourSteps) % 12;
-          br = 1;
-        }
+        nStepCount = nStepCount - 1;
         Step_minute(nStepDirection);
-        
-        if((nStepCount + addHourSteps) % 12 == 0)
+      }
+
+      while(nStepCount2)
+      {
+        nStepCount2 = nStepCount2 - 1;
+        if(nStepCount2 % 12 == 0)
         {
           Step_hour(nStepDirectionHour);
         }
