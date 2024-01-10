@@ -524,6 +524,7 @@ int   Update()
   long              nStepPositionN1 = 0;
   int               br = 0;
   int               addHourSteps = 0;
+  int               stepsHour = 0;
     
   // Calculate clockwise and counterclockwise time in minutes required to drive indicated time to actual time.
   
@@ -584,8 +585,6 @@ int   Update()
       nStepCount = (nStepCount < 0) ? STEPS_PER_HOUR + nStepCount : nStepCount;
 
             
-      SERIAL_PRINTF("Update(): nStepPosition = %d, nStepPositionN1 = %d, nTimeInMinutesIndicated = %d, nStepCount = %d\n", 
-                     nStepPosition, nStepPositionN1, nTimeInMinutesIndicated, nStepCount);
                            
       // Step the required steps.
 
@@ -598,6 +597,7 @@ int   Update()
       }
 
       br = 0;
+      stepsHour = 0;
       while(nStepCount2)
       {
         if (br == 0){
@@ -606,10 +606,14 @@ int   Update()
         }
         if((nStepCount2 + addHourSteps) % 12 == 0)
         {
+          stepsHour++;
           Step_hour(nStepDirectionHour);
         }
         nStepCount2 = nStepCount2 - 1;
       }
+
+      SERIAL_PRINTF("Update(): nStepPosition = %d, nStepPositionN1 = %d, nTimeInMinutesIndicated = %d, nStepCount = %d, stepsHour = %d\n", 
+                     nStepPosition, nStepPositionN1, nTimeInMinutesIndicated, nStepCount, stepsHour);
     }
 
   }
